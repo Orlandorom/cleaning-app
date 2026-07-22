@@ -1,0 +1,142 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum ServiceType {
+  GENERAL
+  DEEP
+  CARPET
+  WINDOW
+  OFFICE
+}
+
+model City {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+
+  providers Provider[]
+}
+
+model Client {
+  id        String   @id @default(uuid())
+  name      String
+  phone     String   @unique
+  email     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  bookings Booking[]
+}
+
+model Provider {
+  id          String  @id @default(uuid())
+  name        String
+  phone       String  @unique
+  email       String?
+  description String?
+
+  rating  Float @default(0)
+  reviews Int   @default(0)
+
+  isAvailable Boolean @default(true)
+
+  latitude  Float?
+  longitude Float?
+
+  cityId String
+  city   City   @relation(fields: [cityId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  services ProviderService[]
+  bookings Booking[]
+
+  @@index([cityId])
+  @@index([isAvailable])
+  @@index([rating])
+}
+
+model Service {
+  id          String      @id @default(uuid())
+  name        String      @unique
+  description String?
+  type        ServiceType
+  duration    Int
+
+  createdAt DateTime @default(now())
+
+  providers ProviderService[]
+  bookings  Booking[]
+}
+
+model ProviderService {
+  providerId String
+  serviceId  String
+
+  price Float
+
+  provider Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  service  Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@id([providerId, serviceId])
+}
+
+model Booking {
+  id String @id @default(uuid())
+
+  clientId   String
+  providerId String
+  serviceId  String
+
+  status BookingStatus @default(PENDING)
+
+  scheduledAt DateTime
+
+  address String
+  notes   String?
+
+  totalPrice Float
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  client   Client   @relation(fields: [clientId], references: [id])
+  provider Provider @relation(fields: [providerId], references: [id])
+  service  Service  @relation(fields: [serviceId], references: [id])
+
+  review Review?
+
+  @@index([status])
+  @@index([clientId])
+  @@index([providerId])
+  @@index([serviceId])
+  @@index([scheduledAt])
+}
+
+model Review {
+  id String @id @default(uuid())
+
+  bookingId String @unique
+
+  rating  Int
+  comment String?
+
+  createdAt DateTime @default(now())
+
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+}
