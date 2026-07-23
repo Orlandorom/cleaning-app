@@ -16,8 +16,43 @@ let ServicesService = class ServicesService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    async findAll() {
-        return this.prisma.service.findMany({ orderBy: { name: 'asc' } });
+    async create(dto) {
+        const existing = await this.prisma.service.findUnique({ where: { name: dto.name } });
+        if (existing) {
+            throw new common_1.ConflictException(`El servicio "${dto.name}" ya existe`);
+        }
+        return this.prisma.service.create({ data: dto });
+    }
+    async findAll(query) {
+        const where = {};
+        if (query?.search) {
+            where.name = { contains: query.search, mode: 'insensitive' };
+        }
+        if (query?.type) {
+            where.type = query.type;
+        }
+        return this.prisma.service.findMany({ where, orderBy: { name: 'asc' } });
+    }
+    async findOne(id) {
+        const service = await this.prisma.service.findUnique({ where: { id } });
+        if (!service) {
+            throw new common_1.NotFoundException(`Servicio con id "${id}" no encontrado`);
+        }
+        return service;
+    }
+    async update(id, dto) {
+        await this.findOne(id);
+        if (dto.name) {
+            const existing = await this.prisma.service.findUnique({ where: { name: dto.name } });
+            if (existing && existing.id !== id) {
+                throw new common_1.ConflictException(`El servicio "${dto.name}" ya existe`);
+            }
+        }
+        return this.prisma.service.update({ where: { id }, data: dto });
+    }
+    async remove(id) {
+        await this.findOne(id);
+        return this.prisma.service.delete({ where: { id } });
     }
 };
 exports.ServicesService = ServicesService;

@@ -1,83 +1,107 @@
 import { ProvidersService } from './providers.service';
-import { QueryProvidersDto } from './dto/query-providers.dto';
+import { CreateProviderDto } from './dto/create-provider.dto';
+import { UpdateProviderDto } from './dto/update-provider.dto';
+import { QueryProviderDto } from './dto/query-provider.dto';
 export declare class ProvidersController {
-    private providersService;
+    private readonly providersService;
     constructor(providersService: ProvidersService);
-    findAll(query: QueryProvidersDto): Promise<({
-        services: ({
-            service: {
-                id: string;
-                name: string;
-                createdAt: Date;
-                description: string | null;
-                type: import(".prisma/client").$Enums.ServiceType;
-                price: number;
-                duration: number;
-            };
-        } & {
-            providerId: string;
-            serviceId: string;
-        })[];
+    create(dto: CreateProviderDto): Promise<{
+        city: {
+            id: string;
+            name: string;
+            createdAt: Date;
+        };
     } & {
         id: string;
-        phone: string;
         name: string;
+        phone: string;
         email: string | null;
-        createdAt: Date;
-        updatedAt: Date;
         description: string | null;
         rating: number;
+        reviews: number;
         isAvailable: boolean;
         latitude: number | null;
         longitude: number | null;
+        createdAt: Date;
+        updatedAt: Date;
+        cityId: string;
+    }>;
+    findAll(query?: QueryProviderDto): Promise<({
+        city: {
+            id: string;
+            name: string;
+            createdAt: Date;
+        };
+    } & {
+        id: string;
+        name: string;
+        phone: string;
+        email: string | null;
+        description: string | null;
+        rating: number;
+        reviews: number;
+        isAvailable: boolean;
+        latitude: number | null;
+        longitude: number | null;
+        createdAt: Date;
+        updatedAt: Date;
+        cityId: string;
     })[]>;
     findOne(id: string): Promise<{
-        bookings: ({
-            review: {
-                id: string;
-                createdAt: Date;
-                rating: number;
-                bookingId: string;
-                comment: string | null;
-            } | null;
-        } & {
+        city: {
             id: string;
+            name: string;
             createdAt: Date;
-            updatedAt: Date;
-            clientId: string;
-            providerId: string;
-            serviceId: string;
-            status: import(".prisma/client").$Enums.BookingStatus;
-            scheduledAt: Date;
-            address: string;
-            notes: string | null;
-            totalPrice: number;
-        })[];
-        services: ({
-            service: {
-                id: string;
-                name: string;
-                createdAt: Date;
-                description: string | null;
-                type: import(".prisma/client").$Enums.ServiceType;
-                price: number;
-                duration: number;
-            };
-        } & {
-            providerId: string;
-            serviceId: string;
-        })[];
+        };
     } & {
         id: string;
-        phone: string;
         name: string;
+        phone: string;
         email: string | null;
-        createdAt: Date;
-        updatedAt: Date;
         description: string | null;
         rating: number;
+        reviews: number;
         isAvailable: boolean;
         latitude: number | null;
         longitude: number | null;
+        createdAt: Date;
+        updatedAt: Date;
+        cityId: string;
+    }>;
+    update(id: string, dto: UpdateProviderDto): Promise<{
+        city: {
+            id: string;
+            name: string;
+            createdAt: Date;
+        };
+    } & {
+        id: string;
+        name: string;
+        phone: string;
+        email: string | null;
+        description: string | null;
+        rating: number;
+        reviews: number;
+        isAvailable: boolean;
+        latitude: number | null;
+        longitude: number | null;
+        createdAt: Date;
+        updatedAt: Date;
+        cityId: string;
+    }>;
+    remove(id: string): Promise<{
+        id: string;
+        name: string;
+        phone: string;
+        email: string | null;
+        description: string | null;
+        rating: number;
+        reviews: number;
+        isAvailable: boolean;
+        latitude: number | null;
+        longitude: number | null;
+        createdAt: Date;
+        updatedAt: Date;
+        cityId: string;
     }>;
 }

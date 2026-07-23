@@ -16,33 +16,46 @@ let ProvidersService = class ProvidersService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    async findAll(query) {
-        const where = { isAvailable: true };
-        if (query.serviceId) {
-            where.services = { some: { serviceId: query.serviceId } };
+    async create(dto) {
+        const existing = await this.prisma.provider.findUnique({ where: { phone: dto.phone } });
+        if (existing) {
+            throw new common_1.ConflictException(`El teléfono "${dto.phone}" ya está registrado`);
         }
-        if (query.search) {
-            where.OR = [
-                { name: { contains: query.search, mode: 'insensitive' } },
-                { description: { contains: query.search, mode: 'insensitive' } },
-            ];
-        }
-        return this.prisma.provider.findMany({
-            where,
-            include: { services: { include: { service: true } } },
-        });
+        return this.prisma.provider.create({ data: dto, include: { city: true } });
     }
-    async findById(id) {
-        const provider = await this.prisma.provider.findUnique({
-            where: { id },
-            include: {
-                services: { include: { service: true } },
-                bookings: { include: { review: true } },
-            },
-        });
-        if (!provider)
-            throw new common_1.NotFoundException('Proveedor no encontrado');
+    async findAll(query) {
+        const where = {};
+        if (query?.search) {
+            where.name = { contains: query.search, mode: 'insensitive' };
+        }
+        if (query?.isAvailable !== undefined) {
+            where.isAvailable = query.isAvailable;
+        }
+        if (query?.cityId) {
+            where.cityId = query.cityId;
+        }
+        return this.prisma.provider.findMany({ where, orderBy: { name: 'asc' }, include: { city: true } });
+    }
+    async findOne(id) {
+        const provider = await this.prisma.provider.findUnique({ where: { id }, include: { city: true } });
+        if (!provider) {
+            throw new common_1.NotFoundException(`Proveedor con id "${id}" no encontrado`);
+        }
         return provider;
+    }
+    async update(id, dto) {
+        await this.findOne(id);
+        if (dto.phone) {
+            const existing = await this.prisma.provider.findUnique({ where: { phone: dto.phone } });
+            if (existing && existing.id !== id) {
+                throw new common_1.ConflictException(`El teléfono "${dto.phone}" ya está registrado`);
+            }
+        }
+        return this.prisma.provider.update({ where: { id }, data: dto, include: { city: true } });
+    }
+    async remove(id) {
+        await this.findOne(id);
+        return this.prisma.provider.delete({ where: { id } });
     }
 };
 exports.ProvidersService = ProvidersService;
