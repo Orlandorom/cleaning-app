@@ -141,3 +141,15 @@ model Review {
 
   booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
 }
+
+model Otp {
+  id        String   @id @default(uuid())
+  phone     String
+  code      String
+  expiresAt DateTime
+  verified  Boolean  @default(false)
+  attempts  Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([phone])
+}

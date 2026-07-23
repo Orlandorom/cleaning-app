@@ -14,62 +14,88 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BookingsController = void 0;
 const common_1 = require("@nestjs/common");
+const swagger_1 = require("@nestjs/swagger");
 const bookings_service_1 = require("./bookings.service");
 const create_booking_dto_1 = require("./dto/create-booking.dto");
-const update_booking_status_dto_1 = require("./dto/update-booking-status.dto");
-const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
-const current_user_decorator_1 = require("../auth/current-user.decorator");
+const update_booking_dto_1 = require("./dto/update-booking.dto");
+const query_booking_dto_1 = require("./dto/query-booking.dto");
 let BookingsController = class BookingsController {
     constructor(bookingsService) {
         this.bookingsService = bookingsService;
     }
-    async create(user, dto) {
-        return this.bookingsService.create(user.id, dto);
+    create(dto) {
+        return this.bookingsService.create(dto);
     }
-    async findAll(user) {
-        return this.bookingsService.findByClient(user.id);
+    findAll(query) {
+        return this.bookingsService.findAll(query);
     }
-    async findOne(id) {
-        return this.bookingsService.findById(id);
+    findOne(id) {
+        return this.bookingsService.findOne(id);
     }
-    async updateStatus(id, dto) {
-        return this.bookingsService.updateStatus(id, dto);
+    update(id, dto) {
+        return this.bookingsService.update(id, dto);
+    }
+    remove(id) {
+        return this.bookingsService.remove(id);
     }
 };
 exports.BookingsController = BookingsController;
 __decorate([
     (0, common_1.Post)(),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Body)()),
+    (0, swagger_1.ApiOperation)({ summary: 'Crear una reserva' }),
+    (0, swagger_1.ApiResponse)({ status: 201, description: 'Reserva creada exitosamente' }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: 'Cliente, proveedor o servicio no encontrado' }),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, create_booking_dto_1.CreateBookingDto]),
-    __metadata("design:returntype", Promise)
+    __metadata("design:paramtypes", [create_booking_dto_1.CreateBookingDto]),
+    __metadata("design:returntype", void 0)
 ], BookingsController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    (0, swagger_1.ApiOperation)({ summary: 'Listar todas las reservas' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Lista de reservas' }),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
+    __metadata("design:paramtypes", [query_booking_dto_1.QueryBookingDto]),
+    __metadata("design:returntype", void 0)
 ], BookingsController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Obtener una reserva por ID' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: 'ID de la reserva' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Reserva encontrada' }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: 'Reserva no encontrada' }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
+    __metadata("design:returntype", void 0)
 ], BookingsController.prototype, "findOne", null);
 __decorate([
-    (0, common_1.Patch)(':id/status'),
+    (0, common_1.Patch)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Actualizar una reserva (estado, fecha, dirección, notas, precio)' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: 'ID de la reserva' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Reserva actualizada' }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: 'Reserva no encontrada' }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_booking_status_dto_1.UpdateBookingStatusDto]),
-    __metadata("design:returntype", Promise)
-], BookingsController.prototype, "updateStatus", null);
+    __metadata("design:paramtypes", [String, update_booking_dto_1.UpdateBookingDto]),
+    __metadata("design:returntype", void 0)
+], BookingsController.prototype, "update", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Eliminar una reserva' }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: 'ID de la reserva' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Reserva eliminada' }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: 'Reserva no encontrada' }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], BookingsController.prototype, "remove", null);
 exports.BookingsController = BookingsController = __decorate([
+    (0, swagger_1.ApiTags)('Bookings'),
     (0, common_1.Controller)('bookings'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __metadata("design:paramtypes", [bookings_service_1.BookingsService])
 ], BookingsController);
 //# sourceMappingURL=bookings.controller.js.map

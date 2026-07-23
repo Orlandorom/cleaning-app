@@ -7,41 +7,41 @@ export declare class ServicesController {
     constructor(servicesService: ServicesService);
     create(dto: CreateServiceDto): Promise<{
         id: string;
+        createdAt: Date;
         name: string;
         description: string | null;
-        createdAt: Date;
         type: import(".prisma/client").$Enums.ServiceType;
         duration: number;
     }>;
     findAll(query?: QueryServiceDto): Promise<{
         id: string;
+        createdAt: Date;
         name: string;
         description: string | null;
-        createdAt: Date;
         type: import(".prisma/client").$Enums.ServiceType;
         duration: number;
     }[]>;
     findOne(id: string): Promise<{
         id: string;
+        createdAt: Date;
         name: string;
         description: string | null;
-        createdAt: Date;
         type: import(".prisma/client").$Enums.ServiceType;
         duration: number;
     }>;
     update(id: string, dto: UpdateServiceDto): Promise<{
         id: string;
+        createdAt: Date;
         name: string;
         description: string | null;
-        createdAt: Date;
         type: import(".prisma/client").$Enums.ServiceType;
         duration: number;
     }>;
     remove(id: string): Promise<{
         id: string;
+        createdAt: Date;
         name: string;
         description: string | null;
-        createdAt: Date;
         type: import(".prisma/client").$Enums.ServiceType;
         duration: number;
     }>;

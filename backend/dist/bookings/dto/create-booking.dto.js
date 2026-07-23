@@ -11,28 +11,50 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateBookingDto = void 0;
 const class_validator_1 = require("class-validator");
+const swagger_1 = require("@nestjs/swagger");
 class CreateBookingDto {
 }
 exports.CreateBookingDto = CreateBookingDto;
 __decorate([
-    (0, class_validator_1.IsUUID)(),
+    (0, swagger_1.ApiProperty)({ example: 'uuid-del-cliente', description: 'ID del cliente' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateBookingDto.prototype, "clientId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'uuid-del-proveedor', description: 'ID del proveedor' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreateBookingDto.prototype, "providerId", void 0);
 __decorate([
-    (0, class_validator_1.IsUUID)(),
+    (0, swagger_1.ApiProperty)({ example: 'uuid-del-servicio', description: 'ID del servicio' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreateBookingDto.prototype, "serviceId", void 0);
 __decorate([
-    (0, class_validator_1.IsDateString)(),
+    (0, swagger_1.ApiProperty)({ example: '2026-08-01T14:00:00Z', description: 'Fecha y hora programada' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreateBookingDto.prototype, "scheduledAt", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Calle 123 #45-67', description: 'Dirección del servicio' }),
     (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreateBookingDto.prototype, "address", void 0);
 __decorate([
-    (0, class_validator_1.IsString)(),
+    (0, swagger_1.ApiPropertyOptional)({ example: 'Dejar llaves en la portería', description: 'Notas adicionales' }),
     (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateBookingDto.prototype, "notes", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 150000, description: 'Precio total del servicio', minimum: 0 }),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.Min)(0),
+    __metadata("design:type", Number)
+], CreateBookingDto.prototype, "totalPrice", void 0);
 //# sourceMappingURL=create-booking.dto.js.map

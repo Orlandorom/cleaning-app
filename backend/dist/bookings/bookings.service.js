@@ -16,49 +16,77 @@ let BookingsService = class BookingsService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    async create(clientId, dto) {
-        const service = await this.prisma.service.findUnique({ where: { id: dto.serviceId } });
-        if (!service)
-            throw new common_1.NotFoundException('Servicio no encontrado');
-        const provider = await this.prisma.provider.findUnique({ where: { id: dto.providerId } });
+    async create(dto) {
+        const [client, provider, service] = await Promise.all([
+            this.prisma.client.findUnique({ where: { id: dto.clientId } }),
+            this.prisma.provider.findUnique({ where: { id: dto.providerId } }),
+            this.prisma.service.findUnique({ where: { id: dto.serviceId } }),
+        ]);
+        if (!client)
+            throw new common_1.NotFoundException(`Cliente con id "${dto.clientId}" no encontrado`);
         if (!provider)
-            throw new common_1.NotFoundException('Proveedor no encontrado');
+            throw new common_1.NotFoundException(`Proveedor con id "${dto.providerId}" no encontrado`);
+        if (!service)
+            throw new common_1.NotFoundException(`Servicio con id "${dto.serviceId}" no encontrado`);
         return this.prisma.booking.create({
             data: {
-                clientId,
+                clientId: dto.clientId,
                 providerId: dto.providerId,
                 serviceId: dto.serviceId,
                 scheduledAt: new Date(dto.scheduledAt),
                 address: dto.address,
                 notes: dto.notes,
-                totalPrice: service.price,
+                totalPrice: dto.totalPrice,
             },
             include: { client: true, provider: true, service: true },
         });
     }
-    async findByClient(clientId) {
+    async findAll(query) {
+        const where = {};
+        if (query?.clientId)
+            where.clientId = query.clientId;
+        if (query?.providerId)
+            where.providerId = query.providerId;
+        if (query?.status)
+            where.status = query.status;
         return this.prisma.booking.findMany({
-            where: { clientId },
-            include: { provider: true, service: true },
-            orderBy: { createdAt: 'desc' },
-        });
-    }
-    async findById(id) {
-        const booking = await this.prisma.booking.findUnique({
-            where: { id },
-            include: { client: true, provider: true, service: true, review: true },
-        });
-        if (!booking)
-            throw new common_1.NotFoundException('Reserva no encontrada');
-        return booking;
-    }
-    async updateStatus(id, dto) {
-        const booking = await this.findById(id);
-        return this.prisma.booking.update({
-            where: { id },
-            data: { status: dto.status },
+            where,
+            orderBy: { scheduledAt: 'desc' },
             include: { client: true, provider: true, service: true },
         });
+    }
+    async findOne(id) {
+        const booking = await this.prisma.booking.findUnique({
+            where: { id },
+            include: { client: true, provider: true, service: true },
+        });
+        if (!booking) {
+            throw new common_1.NotFoundException(`Reserva con id "${id}" no encontrada`);
+        }
+        return booking;
+    }
+    async update(id, dto) {
+        await this.findOne(id);
+        const data = {};
+        if (dto.status !== undefined)
+            data.status = dto.status;
+        if (dto.scheduledAt !== undefined)
+            data.scheduledAt = new Date(dto.scheduledAt);
+        if (dto.address !== undefined)
+            data.address = dto.address;
+        if (dto.notes !== undefined)
+            data.notes = dto.notes;
+        if (dto.totalPrice !== undefined)
+            data.totalPrice = dto.totalPrice;
+        return this.prisma.booking.update({
+            where: { id },
+            data,
+            include: { client: true, provider: true, service: true },
+        });
+    }
+    async remove(id) {
+        await this.findOne(id);
+        return this.prisma.booking.delete({ where: { id } });
     }
 };
 exports.BookingsService = BookingsService;

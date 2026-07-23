@@ -1,36 +1,48 @@
 import { PrismaService } from '../prisma/prisma.service';
+import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
+import { QueryClientDto } from './dto/query-client.dto';
 export declare class ClientsService {
-    private prisma;
+    private readonly prisma;
     constructor(prisma: PrismaService);
-    findById(id: string): Promise<{
-        bookings: {
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            clientId: string;
-            providerId: string;
-            serviceId: string;
-            status: import(".prisma/client").$Enums.BookingStatus;
-            scheduledAt: Date;
-            address: string;
-            notes: string | null;
-            totalPrice: number;
-        }[];
-    } & {
+    create(dto: CreateClientDto): Promise<{
         id: string;
         phone: string;
+        createdAt: Date;
         name: string;
         email: string | null;
+        updatedAt: Date;
+    }>;
+    findAll(query?: QueryClientDto): Promise<{
+        id: string;
+        phone: string;
         createdAt: Date;
+        name: string;
+        email: string | null;
+        updatedAt: Date;
+    }[]>;
+    findOne(id: string): Promise<{
+        id: string;
+        phone: string;
+        createdAt: Date;
+        name: string;
+        email: string | null;
         updatedAt: Date;
     }>;
     update(id: string, dto: UpdateClientDto): Promise<{
         id: string;
         phone: string;
+        createdAt: Date;
         name: string;
         email: string | null;
+        updatedAt: Date;
+    }>;
+    remove(id: string): Promise<{
+        id: string;
+        phone: string;
         createdAt: Date;
+        name: string;
+        email: string | null;
         updatedAt: Date;
     }>;
 }

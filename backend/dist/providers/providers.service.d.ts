@@ -8,100 +8,100 @@ export declare class ProvidersService {
     create(dto: CreateProviderDto): Promise<{
         city: {
             id: string;
-            name: string;
             createdAt: Date;
+            name: string;
         };
     } & {
         id: string;
-        name: string;
         phone: string;
-        email: string | null;
+        createdAt: Date;
+        name: string;
         description: string | null;
+        email: string | null;
         rating: number;
         reviews: number;
         isAvailable: boolean;
         latitude: number | null;
         longitude: number | null;
-        createdAt: Date;
-        updatedAt: Date;
         cityId: string;
+        updatedAt: Date;
     }>;
     findAll(query?: QueryProviderDto): Promise<({
         city: {
             id: string;
-            name: string;
             createdAt: Date;
+            name: string;
         };
     } & {
         id: string;
-        name: string;
         phone: string;
-        email: string | null;
+        createdAt: Date;
+        name: string;
         description: string | null;
+        email: string | null;
         rating: number;
         reviews: number;
         isAvailable: boolean;
         latitude: number | null;
         longitude: number | null;
-        createdAt: Date;
-        updatedAt: Date;
         cityId: string;
+        updatedAt: Date;
     })[]>;
     findOne(id: string): Promise<{
         city: {
             id: string;
-            name: string;
             createdAt: Date;
+            name: string;
         };
     } & {
         id: string;
-        name: string;
         phone: string;
-        email: string | null;
+        createdAt: Date;
+        name: string;
         description: string | null;
+        email: string | null;
         rating: number;
         reviews: number;
         isAvailable: boolean;
         latitude: number | null;
         longitude: number | null;
-        createdAt: Date;
-        updatedAt: Date;
         cityId: string;
+        updatedAt: Date;
     }>;
     update(id: string, dto: UpdateProviderDto): Promise<{
         city: {
             id: string;
-            name: string;
             createdAt: Date;
+            name: string;
         };
     } & {
         id: string;
-        name: string;
         phone: string;
-        email: string | null;
+        createdAt: Date;
+        name: string;
         description: string | null;
+        email: string | null;
         rating: number;
         reviews: number;
         isAvailable: boolean;
         latitude: number | null;
         longitude: number | null;
-        createdAt: Date;
-        updatedAt: Date;
         cityId: string;
+        updatedAt: Date;
     }>;
     remove(id: string): Promise<{
         id: string;
-        name: string;
         phone: string;
-        email: string | null;
+        createdAt: Date;
+        name: string;
         description: string | null;
+        email: string | null;
         rating: number;
         reviews: number;
         isAvailable: boolean;
         latitude: number | null;
         longitude: number | null;
-        createdAt: Date;
-        updatedAt: Date;
         cityId: string;
+        updatedAt: Date;
     }>;
 }

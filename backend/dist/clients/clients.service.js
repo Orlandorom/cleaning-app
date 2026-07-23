@@ -16,18 +16,39 @@ let ClientsService = class ClientsService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    async findById(id) {
-        const client = await this.prisma.client.findUnique({
-            where: { id },
-            include: { bookings: true },
-        });
-        if (!client)
-            throw new common_1.NotFoundException('Cliente no encontrado');
+    async create(dto) {
+        const existing = await this.prisma.client.findUnique({ where: { phone: dto.phone } });
+        if (existing) {
+            throw new common_1.ConflictException(`El teléfono "${dto.phone}" ya está registrado`);
+        }
+        return this.prisma.client.create({ data: dto });
+    }
+    async findAll(query) {
+        const where = query?.search
+            ? { name: { contains: query.search, mode: 'insensitive' } }
+            : {};
+        return this.prisma.client.findMany({ where, orderBy: { name: 'asc' } });
+    }
+    async findOne(id) {
+        const client = await this.prisma.client.findUnique({ where: { id } });
+        if (!client) {
+            throw new common_1.NotFoundException(`Cliente con id "${id}" no encontrado`);
+        }
         return client;
     }
     async update(id, dto) {
-        await this.findById(id);
+        await this.findOne(id);
+        if (dto.phone) {
+            const existing = await this.prisma.client.findUnique({ where: { phone: dto.phone } });
+            if (existing && existing.id !== id) {
+                throw new common_1.ConflictException(`El teléfono "${dto.phone}" ya está registrado`);
+            }
+        }
         return this.prisma.client.update({ where: { id }, data: dto });
+    }
+    async remove(id) {
+        await this.findOne(id);
+        return this.prisma.client.delete({ where: { id } });
     }
 };
 exports.ClientsService = ClientsService;

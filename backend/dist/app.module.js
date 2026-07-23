@@ -13,6 +13,9 @@ const prisma_module_1 = require("./prisma/prisma.module");
 const cities_module_1 = require("./cities/cities.module");
 const services_module_1 = require("./services/services.module");
 const providers_module_1 = require("./providers/providers.module");
+const clients_module_1 = require("./clients/clients.module");
+const bookings_module_1 = require("./bookings/bookings.module");
+const sms_module_1 = require("./sms/sms.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -27,6 +30,9 @@ exports.AppModule = AppModule = __decorate([
             cities_module_1.CitiesModule,
             services_module_1.ServicesModule,
             providers_module_1.ProvidersModule,
+            clients_module_1.ClientsModule,
+            bookings_module_1.BookingsModule,
+            sms_module_1.SmsModule,
         ],
     })
 ], AppModule);
