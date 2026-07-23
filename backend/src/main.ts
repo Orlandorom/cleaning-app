@@ -1,28 +1,17 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 
 const logger = new Logger('Bootstrap');
 
-function validateEnv() {
-  const required = ['DATABASE_URL', 'JWT_SECRET'];
-  const missing = required.filter((key) => !process.env[key]);
-  if (missing.length > 0) {
-    logger.error(`Faltan variables de entorno requeridas: ${missing.join(', ')}`);
-    process.exit(1);
-  }
-}
-
 async function bootstrap() {
-  validateEnv();
-
   const app = await NestFactory.create(AppModule);
 
-  const corsOrigins = process.env.CORS_ORIGINS
-    ? process.env.CORS_ORIGINS.split(',')
-    : ['http://localhost:5173', 'http://localhost:19006'];
+  const configService = app.get(ConfigService);
 
+  const corsOrigins = configService.get<string>('CORS_ORIGINS', 'http://localhost:5173,http://localhost:19006').split(',');
   app.enableCors({ origin: corsOrigins, credentials: true });
 
   app.useGlobalPipes(
@@ -35,7 +24,7 @@ async function bootstrap() {
 
   app.useGlobalFilters(new AllExceptionsFilter());
 
-  const port = process.env.PORT ?? 3000;
+  const port = configService.get<number>('PORT', 3000);
   await app.listen(port);
   logger.log(`Servidor corriendo en puerto ${port}`);
 }
