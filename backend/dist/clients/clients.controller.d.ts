@@ -6,43 +6,43 @@ export declare class ClientsController {
     private readonly clientsService;
     constructor(clientsService: ClientsService);
     create(dto: CreateClientDto): Promise<{
+        name: string;
         id: string;
         phone: string;
         createdAt: Date;
-        name: string;
-        email: string | null;
         updatedAt: Date;
+        email: string | null;
     }>;
     findAll(query?: QueryClientDto): Promise<{
+        name: string;
         id: string;
         phone: string;
         createdAt: Date;
-        name: string;
-        email: string | null;
         updatedAt: Date;
+        email: string | null;
     }[]>;
     findOne(id: string): Promise<{
+        name: string;
         id: string;
         phone: string;
         createdAt: Date;
-        name: string;
-        email: string | null;
         updatedAt: Date;
+        email: string | null;
     }>;
     update(id: string, dto: UpdateClientDto): Promise<{
+        name: string;
         id: string;
         phone: string;
         createdAt: Date;
-        name: string;
-        email: string | null;
         updatedAt: Date;
+        email: string | null;
     }>;
     remove(id: string): Promise<{
+        name: string;
         id: string;
         phone: string;
         createdAt: Date;
-        name: string;
-        email: string | null;
         updatedAt: Date;
+        email: string | null;
     }>;
 }

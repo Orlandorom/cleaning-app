@@ -12,6 +12,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `.claude/` directory with comprehensive project documentation for AI-Driven Development
+
+---
+
+## [0.3.0] — 2026-07-23
+
+### Added
+
+- **Auth Module** — Complete JWT + OTP authentication implementation
+  - `User` + `RefreshToken` models in Prisma schema
+  - `POST /auth/register` — Register with phone + OTP, auto-creates Client or Provider
+  - `POST /auth/login` — Login with phone + OTP
+  - `POST /auth/refresh` — Refresh token rotation (old token revoked)
+  - `POST /auth/logout` — Revoke all user refresh tokens (JWT protected)
+  - `GET /auth/profile` — Get authenticated user with client/provider data included
+  - `JwtAuthGuard` — Protects routes with Bearer JWT
+  - `RolesGuard` — Role-based authorization (`@Roles('ADMIN')`)
+  - `@CurrentUser()` decorator — Extracts user from request
+  - `JwtStrategy` — Validates JWT from `Authorization: Bearer` header
+  - Swagger documentation with `@ApiBearerAuth()` on protected endpoints
+  - 20 new unit tests (14 service + 6 controller)
+- All validation messages in Spanish
+- Phone validation with international format regex
   - `CLAUDE.md` — AI behavior rules, project structure, key commands
   - `PROJECT_CONTEXT.md` — Full project overview and current status
   - `ARCHITECTURE.md` — System architecture and component design

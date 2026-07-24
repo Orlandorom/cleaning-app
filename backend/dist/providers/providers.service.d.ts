@@ -7,101 +7,101 @@ export declare class ProvidersService {
     constructor(prisma: PrismaService);
     create(dto: CreateProviderDto): Promise<{
         city: {
+            name: string;
             id: string;
             createdAt: Date;
-            name: string;
         };
     } & {
+        name: string;
         id: string;
         phone: string;
         createdAt: Date;
-        name: string;
-        description: string | null;
+        updatedAt: Date;
         email: string | null;
+        description: string | null;
         rating: number;
         reviews: number;
         isAvailable: boolean;
         latitude: number | null;
         longitude: number | null;
         cityId: string;
-        updatedAt: Date;
     }>;
     findAll(query?: QueryProviderDto): Promise<({
         city: {
+            name: string;
             id: string;
             createdAt: Date;
-            name: string;
         };
     } & {
+        name: string;
         id: string;
         phone: string;
         createdAt: Date;
-        name: string;
-        description: string | null;
+        updatedAt: Date;
         email: string | null;
+        description: string | null;
         rating: number;
         reviews: number;
         isAvailable: boolean;
         latitude: number | null;
         longitude: number | null;
         cityId: string;
-        updatedAt: Date;
     })[]>;
     findOne(id: string): Promise<{
         city: {
+            name: string;
             id: string;
             createdAt: Date;
-            name: string;
         };
     } & {
+        name: string;
         id: string;
         phone: string;
         createdAt: Date;
-        name: string;
-        description: string | null;
+        updatedAt: Date;
         email: string | null;
+        description: string | null;
         rating: number;
         reviews: number;
         isAvailable: boolean;
         latitude: number | null;
         longitude: number | null;
         cityId: string;
-        updatedAt: Date;
     }>;
     update(id: string, dto: UpdateProviderDto): Promise<{
         city: {
+            name: string;
             id: string;
             createdAt: Date;
-            name: string;
         };
     } & {
+        name: string;
         id: string;
         phone: string;
         createdAt: Date;
-        name: string;
-        description: string | null;
+        updatedAt: Date;
         email: string | null;
+        description: string | null;
         rating: number;
         reviews: number;
         isAvailable: boolean;
         latitude: number | null;
         longitude: number | null;
         cityId: string;
-        updatedAt: Date;
     }>;
     remove(id: string): Promise<{
+        name: string;
         id: string;
         phone: string;
         createdAt: Date;
-        name: string;
-        description: string | null;
+        updatedAt: Date;
         email: string | null;
+        description: string | null;
         rating: number;
         reviews: number;
         isAvailable: boolean;
         latitude: number | null;
         longitude: number | null;
         cityId: string;
-        updatedAt: Date;
     }>;
 }

@@ -14,61 +14,90 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
+const swagger_1 = require("@nestjs/swagger");
 const auth_service_1 = require("./auth.service");
 const register_dto_1 = require("./dto/register.dto");
 const login_dto_1 = require("./dto/login.dto");
-const verify_otp_dto_1 = require("./dto/verify-otp.dto");
-const jwt_auth_guard_1 = require("./jwt-auth.guard");
-const current_user_decorator_1 = require("./current-user.decorator");
+const refresh_dto_1 = require("./dto/refresh.dto");
+const jwt_auth_guard_1 = require("./guards/jwt-auth.guard");
+const current_user_decorator_1 = require("./decorators/current-user.decorator");
 let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
     }
-    async sendOtp(dto) {
-        await this.authService.sendOtp(dto.phone);
-        return { message: 'Código enviado' };
-    }
-    async verify(dto) {
-        return this.authService.verifyOtp(dto.phone, dto.code);
-    }
     async register(dto) {
         return this.authService.register(dto);
     }
-    async getProfile(user) {
-        return user;
+    async login(dto) {
+        return this.authService.login(dto);
+    }
+    async refresh(dto) {
+        return this.authService.refresh(dto);
+    }
+    async logout(userId) {
+        return this.authService.logout(userId);
+    }
+    async getProfile(userId) {
+        return this.authService.getProfile(userId);
     }
 };
 exports.AuthController = AuthController;
 __decorate([
-    (0, common_1.Post)('send-otp'),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [login_dto_1.LoginDto]),
-    __metadata("design:returntype", Promise)
-], AuthController.prototype, "sendOtp", null);
-__decorate([
-    (0, common_1.Post)('verify'),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [verify_otp_dto_1.VerifyOtpDto]),
-    __metadata("design:returntype", Promise)
-], AuthController.prototype, "verify", null);
-__decorate([
     (0, common_1.Post)('register'),
+    (0, swagger_1.ApiOperation)({ summary: 'Registrar nuevo usuario con OTP' }),
+    (0, swagger_1.ApiResponse)({ status: 201, description: 'Usuario registrado exitosamente' }),
+    (0, swagger_1.ApiResponse)({ status: 400, description: 'Datos inválidos, código OTP incorrecto o teléfono ya registrado' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [register_dto_1.RegisterDto]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "register", null);
 __decorate([
-    (0, common_1.Get)('me'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    (0, common_1.Post)('login'),
+    (0, swagger_1.ApiOperation)({ summary: 'Iniciar sesión con OTP' }),
+    (0, swagger_1.ApiResponse)({ status: 201, description: 'Inicio de sesión exitoso' }),
+    (0, swagger_1.ApiResponse)({ status: 401, description: 'Código OTP incorrecto o teléfono no registrado' }),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [login_dto_1.LoginDto]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "login", null);
+__decorate([
+    (0, common_1.Post)('refresh'),
+    (0, swagger_1.ApiOperation)({ summary: 'Renovar access token con refresh token' }),
+    (0, swagger_1.ApiResponse)({ status: 201, description: 'Tokens renovados exitosamente' }),
+    (0, swagger_1.ApiResponse)({ status: 401, description: 'Refresh token inválido o expirado' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [refresh_dto_1.RefreshDto]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "refresh", null);
+__decorate([
+    (0, common_1.Post)('logout'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Cerrar sesión (revocar todos los refresh tokens)' }),
+    (0, swagger_1.ApiResponse)({ status: 201, description: 'Sesión cerrada exitosamente' }),
+    (0, swagger_1.ApiResponse)({ status: 401, description: 'No autenticado' }),
+    __param(0, (0, current_user_decorator_1.CurrentUser)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "logout", null);
+__decorate([
+    (0, common_1.Get)('profile'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Obtener perfil del usuario autenticado' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Perfil del usuario' }),
+    (0, swagger_1.ApiResponse)({ status: 401, description: 'No autenticado' }),
+    __param(0, (0, current_user_decorator_1.CurrentUser)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "getProfile", null);
 exports.AuthController = AuthController = __decorate([
+    (0, swagger_1.ApiTags)('Auth'),
     (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [auth_service_1.AuthService])
 ], AuthController);

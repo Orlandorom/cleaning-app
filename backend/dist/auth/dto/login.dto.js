@@ -11,12 +11,21 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LoginDto = void 0;
 const class_validator_1 = require("class-validator");
+const swagger_1 = require("@nestjs/swagger");
 class LoginDto {
 }
 exports.LoginDto = LoginDto;
 __decorate([
+    (0, swagger_1.ApiProperty)({ example: '+573001234567', description: 'Número de teléfono en formato internacional' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.Matches)(/^\+[1-9]\d{6,14}$/, { message: 'Debe ser un número válido en formato internacional (ej: +573001234567)' }),
+    __metadata("design:type", String)
+], LoginDto.prototype, "phone", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '123456', description: 'Código OTP de 6 dígitos' }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
-], LoginDto.prototype, "phone", void 0);
+], LoginDto.prototype, "code", void 0);
 //# sourceMappingURL=login.dto.js.map

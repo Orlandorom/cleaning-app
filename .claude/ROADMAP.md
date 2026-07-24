@@ -2,7 +2,7 @@
 
 > Plan de desarrollo del proyecto. 20 fases organizadas por dependencia y valor de negocio.
 > 
-> **Estado actual:** 111 tests pasando, backend completo con 6 módulos, frontends en scaffold.
+> **Estado actual:** 131 tests pasando, backend con 7 módulos (Auth incluido), frontends en scaffold.
 > 
 > **Leyenda:** ✅ Completada | 🔜 En progreso | 📝 Pendiente
 
@@ -64,7 +64,7 @@ Configuración completa del backend NestJS con Prisma, PostgreSQL (Neon), Twilio
 
 ---
 
-## Fase 1: Autenticación con OTP y JWT 🔜
+## Fase 1: Autenticación con OTP y JWT ✅
 
 **Objetivo:** Implementar autenticación completa: registro con verificación telefónica, inicio de sesión con JWT, guards de protección de rutas.
 
@@ -100,29 +100,29 @@ Crear el módulo Auth que integre el sistema OTP existente con JWT. Los usuarios
 - `backend/src/common/guards/` (si aplica)
 
 **Criterios de aceptación:**
-- [ ] Registro con teléfono + OTP crea usuario y retorna JWT
-- [ ] Login con teléfono + OTP retorna JWT
-- [ ] Token JWT incluye userId y role en payload
-- [ ] JwtAuthGuard protege rutas y retorna 401 sin token
-- [ ] RolesGuard restringe acceso por rol (admin vs cliente vs prestador)
-- [ ] Refresh token funciona correctamente
-- [ ] Tests unitarios del módulo auth pasan
-- [ ] `npm run build` compila sin errores
-- [ ] `npm test` ejecuta todos los tests sin fallos
+- [x] Registro con teléfono + OTP crea usuario y retorna JWT
+- [x] Login con teléfono + OTP retorna JWT
+- [x] Token JWT incluye userId y role en payload
+- [x] JwtAuthGuard protege rutas y retorna 401 sin token
+- [x] RolesGuard restringe acceso por rol (admin vs cliente vs prestador)
+- [x] Refresh token funciona correctamente (rotación)
+- [x] Tests unitarios del módulo auth pasan (20 tests)
+- [x] `npm run build` compila sin errores
+- [x] `npm test` ejecuta todos los tests sin fallos (131 tests)
 
 **Checklist:**
-- [ ] Agregar campo `role` enum a Client y Provider en schema.prisma
-- [ ] Ejecutar `prisma generate` y `prisma migrate dev`
-- [ ] Implementar AuthService (register, login, refresh, validateUser)
-- [ ] Implementar JwtStrategy (Passport)
-- [ ] Implementar JwtAuthGuard
-- [ ] Implementar RolesGuard
-- [ ] Implementar @CurrentUser decorator
-- [ ] Implementar AuthController con Swagger
-- [ ] Implementar AuthModule y registrar en AppModule
-- [ ] Escribir tests del servicio
-- [ ] Escribir tests del controlador
-- [ ] Verificar compilación y tests
+- [x] Agregar modelos `User` y `RefreshToken` a schema.prisma
+- [x] Ejecutar `prisma generate`
+- [x] Implementar AuthService (register, login, refresh, logout, getProfile)
+- [x] Implementar JwtStrategy (Passport)
+- [x] Implementar JwtAuthGuard
+- [x] Implementar RolesGuard
+- [x] Implementar @CurrentUser decorator
+- [x] Implementar AuthController con Swagger
+- [x] Implementar AuthModule y registrar en AppModule
+- [x] Escribir tests del servicio (14 tests)
+- [x] Escribir tests del controlador (6 tests)
+- [x] Verificar compilación y tests (131 total, todos pasan)
 
 **Dependencias:**
 - Fase 0 (módulo SMS/OTP funcional)
@@ -1113,7 +1113,7 @@ Revisión de seguridad (OWASP top 10), optimización de queries Prisma, implemen
 | Fase | Nombre | Estado | Días Est. | Dependencias |
 |------|--------|--------|-----------|--------------|
 | 0 | Fundación del Proyecto | ✅ Completa | — | — |
-| 1 | Autenticación OTP + JWT | 🔜 Pendiente | 2-3 | Fase 0 |
+| 1 | Autenticación OTP + JWT | ✅ Completa | 2-3 | Fase 0 |
 | 2 | Reseñas (Reviews) | 📝 Pendiente | 1-2 | Fase 0, 1 |
 | 3 | Asignación Servicio-Prestador | 📝 Pendiente | 1 | Fase 0 |
 | 4 | Ciclo Completo de Reservas | 📝 Pendiente | 2 | Fase 0, 1 |

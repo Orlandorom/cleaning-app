@@ -41,6 +41,7 @@ model Client {
   updatedAt DateTime @updatedAt
 
   bookings Booking[]
+  user     User?
 }
 
 model Provider {
@@ -66,6 +67,7 @@ model Provider {
 
   services ProviderService[]
   bookings Booking[]
+  user     User?
 
   @@index([cityId])
   @@index([isAvailable])
@@ -152,4 +154,32 @@ model Otp {
   createdAt DateTime @default(now())
 
   @@index([phone])
+}
+
+model User {
+  id         String   @id @default(uuid())
+  phone      String   @unique
+  role       String
+  clientId   String?  @unique
+  client     Client?  @relation(fields: [clientId], references: [id])
+  providerId String?  @unique
+  provider   Provider? @relation(fields: [providerId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  refreshTokens RefreshToken[]
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  role      String
+  expiresAt DateTime
+  revoked   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
 }

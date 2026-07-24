@@ -7,38 +7,40 @@ export declare class BookingsService {
     constructor(prisma: PrismaService);
     create(dto: CreateBookingDto): Promise<{
         client: {
+            name: string;
             id: string;
             phone: string;
             createdAt: Date;
-            name: string;
-            email: string | null;
             updatedAt: Date;
+            email: string | null;
         };
         provider: {
+            name: string;
             id: string;
             phone: string;
             createdAt: Date;
-            name: string;
-            description: string | null;
+            updatedAt: Date;
             email: string | null;
+            description: string | null;
             rating: number;
             reviews: number;
             isAvailable: boolean;
             latitude: number | null;
             longitude: number | null;
             cityId: string;
-            updatedAt: Date;
         };
         service: {
+            name: string;
             id: string;
             createdAt: Date;
-            name: string;
             description: string | null;
             type: import(".prisma/client").$Enums.ServiceType;
             duration: number;
         };
     } & {
         id: string;
+        clientId: string;
+        providerId: string;
         createdAt: Date;
         updatedAt: Date;
         status: import(".prisma/client").$Enums.BookingStatus;
@@ -46,44 +48,44 @@ export declare class BookingsService {
         address: string;
         notes: string | null;
         totalPrice: number;
-        clientId: string;
-        providerId: string;
         serviceId: string;
     }>;
     findAll(query?: QueryBookingDto): Promise<({
         client: {
+            name: string;
             id: string;
             phone: string;
             createdAt: Date;
-            name: string;
-            email: string | null;
             updatedAt: Date;
+            email: string | null;
         };
         provider: {
+            name: string;
             id: string;
             phone: string;
             createdAt: Date;
-            name: string;
-            description: string | null;
+            updatedAt: Date;
             email: string | null;
+            description: string | null;
             rating: number;
             reviews: number;
             isAvailable: boolean;
             latitude: number | null;
             longitude: number | null;
             cityId: string;
-            updatedAt: Date;
         };
         service: {
+            name: string;
             id: string;
             createdAt: Date;
-            name: string;
             description: string | null;
             type: import(".prisma/client").$Enums.ServiceType;
             duration: number;
         };
     } & {
         id: string;
+        clientId: string;
+        providerId: string;
         createdAt: Date;
         updatedAt: Date;
         status: import(".prisma/client").$Enums.BookingStatus;
@@ -91,44 +93,44 @@ export declare class BookingsService {
         address: string;
         notes: string | null;
         totalPrice: number;
-        clientId: string;
-        providerId: string;
         serviceId: string;
     })[]>;
     findOne(id: string): Promise<{
         client: {
+            name: string;
             id: string;
             phone: string;
             createdAt: Date;
-            name: string;
-            email: string | null;
             updatedAt: Date;
+            email: string | null;
         };
         provider: {
+            name: string;
             id: string;
             phone: string;
             createdAt: Date;
-            name: string;
-            description: string | null;
+            updatedAt: Date;
             email: string | null;
+            description: string | null;
             rating: number;
             reviews: number;
             isAvailable: boolean;
             latitude: number | null;
             longitude: number | null;
             cityId: string;
-            updatedAt: Date;
         };
         service: {
+            name: string;
             id: string;
             createdAt: Date;
-            name: string;
             description: string | null;
             type: import(".prisma/client").$Enums.ServiceType;
             duration: number;
         };
     } & {
         id: string;
+        clientId: string;
+        providerId: string;
         createdAt: Date;
         updatedAt: Date;
         status: import(".prisma/client").$Enums.BookingStatus;
@@ -136,44 +138,44 @@ export declare class BookingsService {
         address: string;
         notes: string | null;
         totalPrice: number;
-        clientId: string;
-        providerId: string;
         serviceId: string;
     }>;
     update(id: string, dto: UpdateBookingDto): Promise<{
         client: {
+            name: string;
             id: string;
             phone: string;
             createdAt: Date;
-            name: string;
-            email: string | null;
             updatedAt: Date;
+            email: string | null;
         };
         provider: {
+            name: string;
             id: string;
             phone: string;
             createdAt: Date;
-            name: string;
-            description: string | null;
+            updatedAt: Date;
             email: string | null;
+            description: string | null;
             rating: number;
             reviews: number;
             isAvailable: boolean;
             latitude: number | null;
             longitude: number | null;
             cityId: string;
-            updatedAt: Date;
         };
         service: {
+            name: string;
             id: string;
             createdAt: Date;
-            name: string;
             description: string | null;
             type: import(".prisma/client").$Enums.ServiceType;
             duration: number;
         };
     } & {
         id: string;
+        clientId: string;
+        providerId: string;
         createdAt: Date;
         updatedAt: Date;
         status: import(".prisma/client").$Enums.BookingStatus;
@@ -181,12 +183,12 @@ export declare class BookingsService {
         address: string;
         notes: string | null;
         totalPrice: number;
-        clientId: string;
-        providerId: string;
         serviceId: string;
     }>;
     remove(id: string): Promise<{
         id: string;
+        clientId: string;
+        providerId: string;
         createdAt: Date;
         updatedAt: Date;
         status: import(".prisma/client").$Enums.BookingStatus;
@@ -194,8 +196,6 @@ export declare class BookingsService {
         address: string;
         notes: string | null;
         totalPrice: number;
-        clientId: string;
-        providerId: string;
         serviceId: string;
     }>;
 }
