@@ -2,7 +2,7 @@
 
 > Plan de desarrollo del proyecto. 20 fases organizadas por dependencia y valor de negocio.
 > 
-> **Estado actual:** 131 tests pasando, backend con 7 módulos + infraestructura de observabilidad + Dockerización completa (Dockerfile multi-stage, compose dev/prod, scripts), frontends en scaffold.
+> **Estado actual:** 131 tests pasando, backend con 7 módulos + observabilidad + Dockerización + CI/CD (GitHub Actions), frontends en scaffold.
 > 
 > **Leyenda:** ✅ Completada | 🔜 En progreso | 📝 Pendiente
 
@@ -998,12 +998,12 @@ Configurar GitHub Actions para CI (tests + build), desplegar backend en Railway/
 - [ ] Monitoreo reporta estado del servidor
 
 **Checklist:**
-- [ ] Configurar GitHub Actions
+- [x] Configurar GitHub Actions (ci.yml + deploy.yml)
 - [x] Crear Dockerfile para backend (multi-stage + dev)
 - [x] Crear docker-compose.yml + dev + prod profiles
 - [x] Crear scripts de healthcheck y helpers
 - [x] Crear .env.example
-- [x] Actualizar DEPLOYMENT.md con Docker real
+- [x] Actualizar DEPLOYMENT.md con Docker + CI/CD real
 - [ ] Configurar Railway/Render
 - [ ] Configurar Vercel/Cloudflare
 - [ ] Configurar EAS Build

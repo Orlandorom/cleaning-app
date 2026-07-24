@@ -881,8 +881,9 @@ async sendOtp(phone: string): Promise<void> {
 
 ### 10.1 Pipeline de CI
 
+**Archivo:** `.github/workflows/ci.yml`
+
 ```yaml
-# .github/workflows/ci.yml
 name: CI
 
 on:
@@ -891,12 +892,41 @@ on:
   pull_request:
     branches: [main]
 
+env:
+  NODE_VERSION: 20
+  WORKING_DIR: ./backend
+
 jobs:
-  test-backend:
+  lint:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./backend
+        working-directory: ${{ env.WORKING_DIR }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: ${{ env.WORKING_DIR }}/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Prisma generate
+        run: npm run prisma:generate
+
+      - name: Type check
+        run: npm run lint
+
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.WORKING_DIR }}
 
     services:
       postgres:
@@ -905,13 +935,13 @@ jobs:
           POSTGRES_USER: test
           POSTGRES_PASSWORD: test
           POSTGRES_DB: cleaning_app_test
+        ports:
+          - 5432:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-        ports:
-          - 5432:5432
 
     steps:
       - uses: actions/checkout@v4
@@ -919,18 +949,18 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
-          cache: 'npm'
-          cache-dependency-path: ./backend/package-lock.json
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: ${{ env.WORKING_DIR }}/package-lock.json
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Generate Prisma client
-        run: npx prisma generate
+      - name: Prisma generate
+        run: npm run prisma:generate
 
       - name: Run migrations
-        run: npx prisma migrate deploy
+        run: npm run prisma:migrate
         env:
           DATABASE_URL: postgresql://test:test@localhost:5432/cleaning_app_test
 
@@ -938,134 +968,25 @@ jobs:
         run: npm test
         env:
           DATABASE_URL: postgresql://test:test@localhost:5432/cleaning_app_test
-          JWT_SECRET: test-secret
+          JWT_SECRET: ci-test-secret
           TWILIO_ACCOUNT_SID: test
           TWILIO_AUTH_TOKEN: test
           TWILIO_PHONE_NUMBER: +1234567890
 
       - name: Upload coverage
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: coverage
-          path: ./backend/coverage/
+          path: ${{ env.WORKING_DIR }}/coverage/
+          retention-days: 7
 
-  lint-backend:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./backend
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 18
-          cache: 'npm'
-          cache-dependency-path: ./backend/package-lock.json
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run lint
-        run: npm run lint
-
-  build-backend:
-    runs-on: ubuntu-latest
-    needs: [test-backend, lint-backend]
-    defaults:
-      run:
-        working-directory: ./backend
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build
-        run: npm run build
-```
-
-### 10.2 Pipeline de CD — Backend
-
-```yaml
-# .github/workflows/deploy-backend.yml
-name: Deploy Backend
-
-on:
-  push:
-    branches: [main]
-    paths:
-      - 'backend/**'
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Deploy to Render
-        uses: johnbeynon/render-deploy-action@v0.0.8
-        with:
-          service-id: ${{ secrets.RENDER_SERVICE_ID }}
-          api-key: ${{ secrets.RENDER_API_KEY }}
-          wait-for-deployment: true
-
-      # O para Railway:
-      # - name: Deploy to Railway
-      #   uses: railway/railway-action@v3
-      #   with:
-      #     railway_token: ${{ secrets.RAILWAY_TOKEN }}
-      #     service: backend
-```
-
-### 10.3 Pipeline de CD — Admin
-
-```yaml
-# .github/workflows/deploy-admin.yml
-name: Deploy Admin
-
-on:
-  push:
-    branches: [main]
-    paths:
-      - 'frontend-admin/**'
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Deploy to Vercel
-        uses: amondnet/vercel-action@v20
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: '--prod'
-```
-
-### 10.4 Pipeline de CD — Mobile (EAS)
-
-```yaml
-# .github/workflows/deploy-mobile.yml
-name: Deploy Mobile
-
-on:
-  push:
-    branches: [main]
-    paths:
-      - 'frontend-mobile/**'
-
-jobs:
   build:
     runs-on: ubuntu-latest
+    needs: [lint, test]
+    defaults:
+      run:
+        working-directory: ${{ env.WORKING_DIR }}
 
     steps:
       - uses: actions/checkout@v4
@@ -1073,35 +994,158 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: ${{ env.WORKING_DIR }}/package-lock.json
 
-      - name: Setup EAS
-        uses: expo/expo-github-action@v8
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Prisma generate
+        run: npm run prisma:generate
+
+      - name: Build
+        run: npm run build
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
         with:
-          expo-version: latest
-          eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
+          name: dist
+          path: ${{ env.WORKING_DIR }}/dist/
+          retention-days: 7
 
-      - name: Build with EAS
-        run: eas build --platform all --profile production --non-interactive
-        working-directory: ./frontend-mobile
+  docker:
+    runs-on: ubuntu-latest
+    needs: [build]
+    defaults:
+      run:
+        working-directory: ${{ env.WORKING_DIR }}
 
-      - name: Submit to stores
-        run: eas submit --platform all --profile production --non-interactive
-        working-directory: ./frontend-mobile
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ env.WORKING_DIR }}
+          file: ${{ env.WORKING_DIR }}/Dockerfile
+          target: production
+          push: false
+          tags: cleaning-app-backend:ci-${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 ```
 
-### 10.5 Secrets de GitHub Actions
+**Jobs del pipeline:**
+
+| Job | Depende de | Descripción |
+|-----|-----------|-------------|
+| `lint` | — | TypeScript type checking (`tsc --noEmit`) + Prisma generate |
+| `test` | — | Tests unitarios con PostgreSQL service container |
+| `build` | `lint`, `test` | Compilación NestJS + sube artifact `dist/` |
+| `docker` | `build` | Build de imagen Docker (sin push) con cache GHA |
+
+### 10.2 Pipeline de CD — Backend
+
+**Archivo:** `.github/workflows/deploy.yml`
+
+```yaml
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Entorno de deploy'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+env:
+  NODE_VERSION: 20
+  WORKING_DIR: ./backend
+
+jobs:
+  deploy-ready:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.WORKING_DIR }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: ${{ env.WORKING_DIR }}/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Prisma generate
+        run: npm run prisma:generate
+
+      - name: Build
+        run: npm run build
+
+      - name: Run tests
+        run: npm test
+        env:
+          JWT_SECRET: ci-test-secret
+          TWILIO_ACCOUNT_SID: test
+          TWILIO_AUTH_TOKEN: test
+          TWILIO_PHONE_NUMBER: +1234567890
+
+      - name: Log in to Docker Hub
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker image
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ env.WORKING_DIR }}
+          file: ${{ env.WORKING_DIR }}/Dockerfile
+          target: production
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/cleaning-app-backend:latest
+            ${{ secrets.DOCKER_USERNAME }}/cleaning-app-backend:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Deploy to Render
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          deploy_url: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          curl -X POST "$deploy_url"
+```
+
+### 10.3 Secrets de GitHub Actions
 
 | Secret | Propósito |
 |--------|-----------|
-| `RENDER_API_KEY` | API key de Render para deploy |
-| `RENDER_SERVICE_ID` | ID del servicio en Render |
-| `RAILWAY_TOKEN` | Token de Railway |
-| `VERCEL_TOKEN` | Token de Vercel |
-| `VERCEL_ORG_ID` | ID de la organización en Vercel |
-| `VERCEL_PROJECT_ID` | ID del proyecto en Vercel |
-| `EXPO_TOKEN` | Token de Expo para EAS Build |
+| `DOCKER_USERNAME` | Usuario de Docker Hub para push de imágenes |
+| `DOCKER_PASSWORD` | Token de acceso de Docker Hub |
+| `RENDER_DEPLOY_HOOK_URL` | URL del deploy hook de Render |
+| `RAILWAY_TOKEN` | Token de Railway (para deploy alternativo) |
 
 ---
 

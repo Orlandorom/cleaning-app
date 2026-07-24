@@ -15,6 +15,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.0] — 2026-07-24
+
+### Added
+
+- **GitHub Actions CI/CD** — Complete workflow pipelines
+  - `.github/workflows/ci.yml` — CI pipeline with 4 jobs:
+    - `lint` — TypeScript type checking (`tsc --noEmit`) + Prisma generate
+    - `test` — Unit tests with PostgreSQL 16 service container, migrations, coverage upload
+    - `build` — NestJS compilation, dist artifact upload (7 day retention)
+    - `docker` — Docker image build with BuildKit cache (no push), depends on `build`
+  - `.github/workflows/deploy.yml` — Deploy pipeline with:
+    - Build, test, Docker build & push to Docker Hub
+    - Render deploy via webhook hook
+    - Railway deploy (commented, ready)
+    - `workflow_dispatch` for manual staging/production triggers
+  - `npm run lint` script (`tsc --noEmit`) added to backend package.json
+  - CI runs on push to `main`/`develop` and PRs to `main`
+  - Docker BuildKit layer caching via `type=gha`
+
+### Infrastructure
+
+- `actions/checkout@v4`, `actions/setup-node@v4`, `docker/setup-buildx-action@v3`, `docker/build-push-action@v6`, `actions/upload-artifact@v4`
+
+---
+
 ## [0.5.0] — 2026-07-24
 
 ### Added
