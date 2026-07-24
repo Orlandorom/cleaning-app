@@ -59,3 +59,40 @@
 - [x] 7.2 Admin build exitoso
 - [x] 7.3 Configuración entornos producción
 - [x] 7.4 Typecheck pasado en backend, mobile y admin
+
+## ✅ Fase 9 — Autenticación completa
+- [x] 9.1 User + RefreshToken models (Prisma)
+- [x] 9.2 JWT con Passport (2 tokens + refresh rotation)
+- [x] 9.3 RolesGuard + decorador @Roles
+- [x] 9.4 5 endpoints auth (register, login, refresh, logout, profile)
+- [x] 9.5 131 tests passing
+
+## ✅ Fase 20 — Observabilidad
+- [x] 20.1 nestjs-pino logger global + correlation ID middleware
+- [x] 20.2 HealthController (/health, /ready)
+- [x] 20.3 MetricsController (/metrics, Prometheus)
+
+## ✅ Dockerización
+- [x] Dockerfile multi-stage (build + production)
+- [x] Dockerfile.dev (hot-reload)
+- [x] docker-compose.yml + dev + prod
+- [x] Scripts: healthcheck.sh, dev.sh, prod.sh
+- [x] .env.example
+
+## ✅ CI/CD (GitHub Actions)
+- [x] ci.yml: lint, test, build, docker (4 jobs)
+- [x] deploy.yml: push Docker Hub + Render webhook
+
+## ✅ Fase 19 — Frontend Mobile Arquitectura
+- [x] Config: package.json, app.json, babel, metro, tailwind, tsconfig, nativewind-env, .env.example
+- [x] app/ layouts (root + auth + tabs + 404)
+- [x] lib/ (query-client, mmkv, fonts)
+- [x] store/ (auth, theme, toast, loading)
+- [x] services/ (api.ts Axios + 7 API modules)
+- [x] hooks/ (useAuth, useColorScheme, useToast)
+- [x] types/ (api, auth)
+- [x] theme/ (colors, typography, spacing)
+- [x] utils/ (Zod validation, formatters, constants)
+- [x] components/ui/ (Button, Input, Card, Badge, Spinner, EmptyState, ErrorBoundary, Toast, LoadingOverlay)
+- [x] features/auth/AuthGuard
+- [x] 0 screens business logic — solo arquitectura

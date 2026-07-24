@@ -4,8 +4,9 @@
     "slug": "cleaning-app-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "icon": "./src/assets/icon.png",
+    "scheme": "cleaning-app",
+    "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
       "backgroundColor": "#ffffff"
@@ -21,7 +22,8 @@
       "package": "com.cleaningapp.mobile"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "expo-font"
     ]
   }
 }
