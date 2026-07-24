@@ -183,23 +183,25 @@ railway up
 
 ### 3.4 Health Check
 
-El endpoint de health check es un GET a un endpoint público:
+El backend expone endpoints dedicados de health check:
 
 ```http
-GET /cities
-# Response 200 → OK
-# Response 500 → Error
+GET /health
+# Response 200 → { status: 'ok', info: { database: { status: 'up' } } }
+# Response 503 → { status: 'error', ... }
+
+GET /ready
+# Response 200 → { status: 'ok', info: { database: { status: 'up' } } }
+# Response 503 → { status: 'error', ... }
 ```
 
-O configurar un endpoint dedicado:
+Estos endpoints verifican la conectividad con la base de datos usando `@nestjs/terminus` + `PrismaHealthIndicator`.
 
-```typescript
-// src/health/health.controller.ts
-@Get('/health')
-async healthCheck() {
-  await this.prisma.$queryRaw`SELECT 1`;  // Verificar DB
-  return { status: 'ok', timestamp: new Date().toISOString() };
-}
+También se exportan métricas Prometheus en:
+
+```http
+GET /metrics
+# Response 200 → Prometheus text format
 ```
 
 ### 3.5 Scripts de npm para Producción
@@ -415,25 +417,28 @@ const apiUrl = import.meta.env.VITE_API_URL;
 
 ### 6.1 Dockerfile — Backend
 
+**`backend/Dockerfile`** — multi-stage build para producción:
+
 ```dockerfile
-# backend/Dockerfile
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
 COPY package*.json ./
 RUN npm ci
 
-COPY tsconfig*.json ./
+COPY tsconfig*.json nest-cli.json ./
 COPY src/ ./src/
 COPY prisma/ ./prisma/
 
+RUN npx prisma generate
 RUN npm run build
 
-# Production stage
-FROM node:18-alpine AS production
+FROM node:20-alpine AS production
 
 WORKDIR /app
+
+RUN apk add --no-cache curl
 
 COPY package*.json ./
 RUN npm ci --omit=dev
@@ -444,66 +449,24 @@ COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 
 RUN npx prisma generate
 
+USER node
+
 EXPOSE 3000
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD curl -f http://localhost:3000/health || exit 1
 
 CMD ["node", "dist/main"]
 ```
 
-### 6.2 Docker Compose — Desarrollo
-
-```yaml
-# docker-compose.yml (raíz del proyecto)
-version: '3.8'
-
-services:
-  backend:
-    build:
-      context: ./backend
-      target: production
-    ports:
-      - "3000:3000"
-    env_file:
-      - ./backend/.env
-    depends_on:
-      - postgres
-    restart: unless-stopped
-
-  postgres:
-    image: postgres:16-alpine
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: cleaning_app
-      POSTGRES_PASSWORD: cleaning_app_dev
-      POSTGRES_DB: cleaning_app_dev
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-volumes:
-  postgres_data:
-```
-
-### 6.3 Docker Compose — Desarrollo con Hot Reload
-
-```yaml
-# docker-compose.dev.yml
-services:
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.dev
-    volumes:
-      - ./backend/src:/app/src
-      - ./backend/prisma:/app/prisma
-    command: npm run start:dev
-    # ...
-```
+**`backend/Dockerfile.dev`** — imagen para desarrollo con hot reload:
 
 ```dockerfile
-# backend/Dockerfile.dev
-FROM node:18-alpine
+FROM node:20-alpine
 
 WORKDIR /app
+
+RUN apk add --no-cache curl
 
 COPY package*.json ./
 RUN npm install
@@ -512,10 +475,82 @@ COPY . .
 
 RUN npx prisma generate
 
+EXPOSE 3000
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD curl -f http://localhost:3000/health || exit 1
+
 CMD ["npm", "run", "start:dev"]
 ```
 
-### 6.4 .dockerignore
+### 6.2 Docker Compose
+
+**`docker-compose.yml`** — configuración base:
+
+```yaml
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "${BACKEND_PORT:-3000}:3000"
+    env_file:
+      - ./backend/.env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+```
+
+**`docker-compose.dev.yml`** — overrides para desarrollo:
+
+```yaml
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./backend/src:/app/src
+      - ./backend/prisma:/app/prisma
+      - /app/node_modules
+    command: npm run start:dev
+    environment:
+      - NODE_ENV=development
+```
+
+**`docker-compose.prod.yml`** — overrides para producción:
+
+```yaml
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: production
+    restart: always
+    environment:
+      - NODE_ENV=production
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: "512M"
+        reservations:
+          cpus: "0.5"
+          memory: "256M"
+```
+
+### 6.3 .dockerignore
 
 ```
 # backend/.dockerignore
@@ -528,16 +563,83 @@ dist
 *.md
 ```
 
-### 6.5 Buenas Prácticas Docker
+### 6.4 .env.example
+
+**`backend/.env.example`** (commitado, sin valores sensibles):
+
+```env
+# Base de datos
+DATABASE_URL="postgresql://user:pass@ep-xxx-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require"
+DIRECT_URL="postgresql://user:pass@ep-xxx.us-east-1.aws.neon.tech/neondb?sslmode=require"
+
+# JWT
+JWT_SECRET=your-secret-key-change-in-production
+
+# Twilio (opcional en desarrollo)
+TWILIO_ACCOUNT_SID=
+TWILIO_AUTH_TOKEN=
+TWILIO_PHONE_NUMBER=
+
+# CORS (separado por coma)
+CORS_ORIGINS=http://localhost:5173,http://localhost:19006
+
+# Puerto
+PORT=3000
+```
+
+### 6.5 Scripts
+
+| Script | Propósito |
+|--------|-----------|
+| `scripts/dev.sh` | `docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build` |
+| `scripts/prod.sh` | `docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d` |
+| `scripts/healthcheck.sh` | Verifica `GET /health` retorne 200 |
+| `backend/scripts/healthcheck.sh` | Healthcheck interno del contenedor (`curl -f http://localhost:3000/health`) |
+
+### 6.6 Comandos Útiles
+
+```bash
+# Construir imagen
+docker build -t cleaning-app-backend ./backend
+
+# Iniciar en desarrollo
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+# Iniciar en producción
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+# Ver logs
+docker compose logs -f backend
+
+# Ejecutar migraciones
+docker compose exec backend npx prisma migrate deploy
+
+# Health check manual
+curl http://localhost:3000/health
+
+# Ver métricas
+curl http://localhost:3000/metrics
+
+# Detener
+docker compose down
+
+# Limpiar volúmenes e imágenes
+docker compose down -v
+```
+
+### 6.7 Buenas Prácticas Docker
 
 | Práctica | Implementación |
 |----------|---------------|
 | Multi-stage build | Builder + Production stages |
-| Imagen base Alpine | `node:18-alpine` (~120MB final) |
+| Imagen base Alpine | `node:20-alpine` (~120MB final) |
 | No correr como root | `USER node` en production stage |
 | Cache de capas | `npm ci` antes de copiar código fuente |
-| Healthcheck | `HEALTHCHECK --interval=30s CMD wget --spider http://localhost:3000/cities` |
-| Sin secrets en build | Usar `env_file` o secrets de Docker Swarm |
+| Healthcheck integrado | `HEALTHCHECK` + `/health` endpoint con verificación de DB |
+| Sin secrets en build | Usar `env_file` o Docker secrets |
+| Logging configurado | `json-file` driver con rotación en producción |
+| Límites de recursos | CPU y memory limits en producción |
+| Sin dependencias externas | No requiere PostgreSQL local (usa Neon serverless) |
 
 ---
 
@@ -1113,8 +1215,16 @@ auth       cities  bookings   ...
 
 ```bash
 # Health check del backend
-curl -s https://api.cleaning-app.com/cities | head -c 100
-# Esperado: [{"id":"uuid","name":"Bogotá",...}]
+curl -s https://api.cleaning-app.com/health
+# Esperado: {"status":"ok","info":{"database":{"status":"up"}},...}
+
+# Readiness check
+curl -s https://api.cleaning-app.com/ready
+# Esperado: {"status":"ok","info":{"database":{"status":"up"}},...}
+
+# Métricas Prometheus
+curl -s https://api.cleaning-app.com/metrics
+# Esperado: texto plano con métricas
 
 # Swagger
 curl -s -o /dev/null -w "%{http_code}" https://api.cleaning-app.com/api/docs
@@ -1141,10 +1251,15 @@ curl -s -H "Origin: https://admin.cleaning-app.com" \
 
 | Herramienta | Propósito | Configuración |
 |-------------|-----------|--------------|
-| **NestJS Logger** | Logs de aplicación | Ya implementado en `AllExceptionsFilter` |
+| **nestjs-pino** | Logger estructurado (JSON) global | `LoggerModule` — pino-http con auto-logging |
+| **Correlation ID** | Trazabilidad por request | Middleware `x-correlation-id` en todas las respuestas |
+| **pino-pretty** | Formato legible en desarrollo | Solo activo cuando `NODE_ENV !== 'production'` |
 | **Render/Railway logs** | Logs de plataforma | Dashboard del proveedor |
+| **Prometheus** | Métricas del sistema | `GET /metrics` — default metrics + HTTP metrics |
 | **Sentry** (futuro) | Error tracking | Capturar excepciones no manejadas |
 | **Logtail / Better Stack** (futuro) | Log management | Agregación de logs |
+
+Los logs de pino-http incluyen automáticamente: método, URL, status code, tiempo de respuesta y correlation ID. Los endpoints `/health`, `/ready` y `/metrics` están excluidos del auto-logging para evitar ruido.
 
 ### 13.2 Alertas
 

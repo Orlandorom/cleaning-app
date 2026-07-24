@@ -1,16 +1,21 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe, Logger } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { Logger } from 'nestjs-pino';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
-
-const logger = new Logger('Bootstrap');
+import { CorrelationIdMiddleware } from './common/middleware/correlation-id.middleware';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  const pinoLogger = app.get(Logger);
+  app.useLogger(pinoLogger);
 
   const configService = app.get(ConfigService);
+
+  const correlationMiddleware = new CorrelationIdMiddleware();
+  app.use((req: any, res: any, next: any) => correlationMiddleware.use(req, res, next));
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Cleaning App API')
@@ -37,6 +42,6 @@ async function bootstrap() {
 
   const port = configService.get<number>('PORT', 3000);
   await app.listen(port);
-  logger.log(`Servidor corriendo en puerto ${port}`);
+  pinoLogger.log(`Servidor corriendo en puerto ${port}`);
 }
 bootstrap();

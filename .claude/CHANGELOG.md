@@ -11,7 +11,62 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `.claude/` directory with comprehensive project documentation for AI-Driven Development
+- (no unreleased changes)
+
+---
+
+## [0.5.0] — 2026-07-24
+
+### Added
+
+- **Dockerization** — Full Docker setup for backend
+  - `backend/Dockerfile` — Multi-stage production build (Node 20 Alpine, ~120MB)
+  - `backend/Dockerfile.dev` — Development image with hot reload
+  - `backend/.dockerignore` — Optimized build context exclusions
+  - `docker-compose.yml` — Base compose with backend service + healthcheck
+  - `docker-compose.dev.yml` — Dev overrides (volume mounts, hot reload)
+  - `docker-compose.prod.yml` — Prod overrides (resource limits, JSON logging)
+  - `backend/.env.example` — Reference environment variables template
+  - `.env.example` — Root-level environment template
+  - `scripts/dev.sh` — One-command dev startup
+  - `scripts/prod.sh` — One-command prod startup
+  - `scripts/healthcheck.sh` — External health check utility
+  - `backend/scripts/healthcheck.sh` — Internal container health check
+  - HEALTHCHECK instruction in both Dockerfiles (curl to /health)
+  - Production container uses `USER node` for security
+  - Resource limits (CPU/Memory) in production compose
+  - JSON file logging with rotation in production
+
+### Documentation
+
+- `DEPLOYMENT.md` — Updated Section 6 (Docker) with real file contents
+- `DEPLOYMENT.md` — Updated Section 3.4 (Health Check) to use /health endpoint
+- `DEPLOYMENT.md` — Updated Section 13 (Monitoreo) to include pino and correlation ID
+- `DEPLOYMENT.md` — Updated Section 12.6 (Verificar Deploy) with health, ready, metrics
+
+---
+
+## [0.4.0] — 2026-07-23
+
+### Added
+
+- **Observability** — Logging, health checks, metrics
+  - `nestjs-pino` as global logger with structured JSON output
+  - `pino-pretty` transport in development for human-readable logs
+  - Correlation ID (`x-correlation-id`) in all requests and responses
+  - Request/Response logging via pino-http auto-logger
+  - Error logging with correlation ID context
+  - `GET /health` — Database connectivity health check via `@nestjs/terminus`
+  - `GET /ready` — Readiness probe for Kubernetes/orchestration
+  - `GET /metrics` — Prometheus metrics (default metrics + HTTP metrics)
+  - `prom-client` with `collectDefaultMetrics` for Node.js metrics
+  - Health and metrics endpoints excluded from access logs
+  - 0 new tests (infrastructure-only, no business logic)
+
+### Infrastructure
+
+- `bufferLogs: true` in NestFactory to capture bootstrap logs with pino
+- `PrismaHealthIndicator` for database health checks
 
 ---
 
@@ -34,19 +89,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - 20 new unit tests (14 service + 6 controller)
 - All validation messages in Spanish
 - Phone validation with international format regex
-  - `CLAUDE.md` — AI behavior rules, project structure, key commands
-  - `PROJECT_CONTEXT.md` — Full project overview and current status
-  - `ARCHITECTURE.md` — System architecture and component design
-  - `ROADMAP.md` — Development phases and progress tracking
-  - `CODING_STANDARDS.md` — Code style and structural conventions
-  - `API_CONVENTIONS.md` — API design patterns and endpoint documentation
-  - `DATABASE_GUIDELINES.md` — Prisma schema and query conventions
-  - `SECURITY.md` — Auth, OTP, and security best practices
-  - `UI_GUIDELINES.md` — Frontend design and component conventions
-  - `TESTING.md` — Test patterns, mocking strategies, coverage targets
-  - `DEPLOYMENT.md` — Build, deploy, and CI/CD strategy
-  - `CHANGELOG.md` — Version history (this file)
-  - `PROMPTS/` — Directory for AI-driven development prompts
 
 ---
 

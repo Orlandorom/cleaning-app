@@ -12,19 +12,19 @@ export declare class ProvidersController {
             createdAt: Date;
         };
     } & {
+        description: string | null;
         name: string;
         id: string;
-        phone: string;
         createdAt: Date;
-        updatedAt: Date;
+        phone: string;
         email: string | null;
-        description: string | null;
-        rating: number;
-        reviews: number;
         isAvailable: boolean;
         latitude: number | null;
         longitude: number | null;
         cityId: string;
+        rating: number;
+        reviews: number;
+        updatedAt: Date;
     }>;
     findAll(query?: QueryProviderDto): Promise<({
         city: {
@@ -33,19 +33,19 @@ export declare class ProvidersController {
             createdAt: Date;
         };
     } & {
+        description: string | null;
         name: string;
         id: string;
-        phone: string;
         createdAt: Date;
-        updatedAt: Date;
+        phone: string;
         email: string | null;
-        description: string | null;
-        rating: number;
-        reviews: number;
         isAvailable: boolean;
         latitude: number | null;
         longitude: number | null;
         cityId: string;
+        rating: number;
+        reviews: number;
+        updatedAt: Date;
     })[]>;
     findOne(id: string): Promise<{
         city: {
@@ -54,19 +54,19 @@ export declare class ProvidersController {
             createdAt: Date;
         };
     } & {
+        description: string | null;
         name: string;
         id: string;
-        phone: string;
         createdAt: Date;
-        updatedAt: Date;
+        phone: string;
         email: string | null;
-        description: string | null;
-        rating: number;
-        reviews: number;
         isAvailable: boolean;
         latitude: number | null;
         longitude: number | null;
         cityId: string;
+        rating: number;
+        reviews: number;
+        updatedAt: Date;
     }>;
     update(id: string, dto: UpdateProviderDto): Promise<{
         city: {
@@ -75,33 +75,33 @@ export declare class ProvidersController {
             createdAt: Date;
         };
     } & {
+        description: string | null;
         name: string;
         id: string;
-        phone: string;
         createdAt: Date;
-        updatedAt: Date;
+        phone: string;
         email: string | null;
-        description: string | null;
-        rating: number;
-        reviews: number;
         isAvailable: boolean;
         latitude: number | null;
         longitude: number | null;
         cityId: string;
+        rating: number;
+        reviews: number;
+        updatedAt: Date;
     }>;
     remove(id: string): Promise<{
+        description: string | null;
         name: string;
         id: string;
-        phone: string;
         createdAt: Date;
-        updatedAt: Date;
+        phone: string;
         email: string | null;
-        description: string | null;
-        rating: number;
-        reviews: number;
         isAvailable: boolean;
         latitude: number | null;
         longitude: number | null;
         cityId: string;
+        rating: number;
+        reviews: number;
+        updatedAt: Date;
     }>;
 }

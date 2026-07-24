@@ -17,6 +17,9 @@ const clients_module_1 = require("./clients/clients.module");
 const bookings_module_1 = require("./bookings/bookings.module");
 const sms_module_1 = require("./sms/sms.module");
 const auth_module_1 = require("./auth/auth.module");
+const logger_module_1 = require("./common/logger/logger.module");
+const health_module_1 = require("./health/health.module");
+const metrics_module_1 = require("./metrics/metrics.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -35,6 +38,9 @@ exports.AppModule = AppModule = __decorate([
             bookings_module_1.BookingsModule,
             sms_module_1.SmsModule,
             auth_module_1.AuthModule,
+            logger_module_1.LoggerModule,
+            health_module_1.HealthModule,
+            metrics_module_1.MetricsModule,
         ],
     })
 ], AppModule);

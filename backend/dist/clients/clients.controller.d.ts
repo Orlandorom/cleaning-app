@@ -8,41 +8,41 @@ export declare class ClientsController {
     create(dto: CreateClientDto): Promise<{
         name: string;
         id: string;
-        phone: string;
         createdAt: Date;
-        updatedAt: Date;
+        phone: string;
         email: string | null;
+        updatedAt: Date;
     }>;
     findAll(query?: QueryClientDto): Promise<{
         name: string;
         id: string;
-        phone: string;
         createdAt: Date;
-        updatedAt: Date;
+        phone: string;
         email: string | null;
+        updatedAt: Date;
     }[]>;
     findOne(id: string): Promise<{
         name: string;
         id: string;
-        phone: string;
         createdAt: Date;
-        updatedAt: Date;
+        phone: string;
         email: string | null;
+        updatedAt: Date;
     }>;
     update(id: string, dto: UpdateClientDto): Promise<{
         name: string;
         id: string;
-        phone: string;
         createdAt: Date;
-        updatedAt: Date;
+        phone: string;
         email: string | null;
+        updatedAt: Date;
     }>;
     remove(id: string): Promise<{
         name: string;
         id: string;
-        phone: string;
         createdAt: Date;
-        updatedAt: Date;
+        phone: string;
         email: string | null;
+        updatedAt: Date;
     }>;
 }
