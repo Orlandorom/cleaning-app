@@ -9,13 +9,12 @@ import { useThemeStore } from '@/store/theme-store';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { ToastProvider } from '@/components/ui/Toast';
 import { LoadingOverlay } from '@/components/ui/LoadingOverlay';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { SessionProvider } from '@/features/auth/SessionProvider';
 import '../nativewind-env.d.ts';
 
 SplashScreen.preventAutoHideAsync();
 
 function RootLayoutNav() {
-  const colorScheme = useColorScheme();
   const { isDark } = useThemeStore();
 
   return (
@@ -27,6 +26,7 @@ function RootLayoutNav() {
           animation: 'slide_from_right',
         }}
       >
+        <Stack.Screen name="index" />
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack>
@@ -43,10 +43,12 @@ export default function RootLayout() {
     <GestureHandlerRootView className="flex-1">
       <ErrorBoundary>
         <QueryClientProvider client={queryClient}>
-          <ToastProvider>
-            <RootLayoutNav />
-            <LoadingOverlay />
-          </ToastProvider>
+          <SessionProvider>
+            <ToastProvider>
+              <RootLayoutNav />
+              <LoadingOverlay />
+            </ToastProvider>
+          </SessionProvider>
         </QueryClientProvider>
       </ErrorBoundary>
     </GestureHandlerRootView>

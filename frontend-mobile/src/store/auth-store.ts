@@ -6,10 +6,13 @@ interface AuthState {
   token: string | null;
   refreshToken: string | null;
   user: User | null;
+  phone: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   setAuth: (params: { token: string; refreshToken: string; user: User }) => void;
+  setTokens: (token: string, refreshToken: string) => void;
   setUser: (user: User) => void;
+  setPhone: (phone: string) => void;
   logout: () => void;
   setLoading: (loading: boolean) => void;
   hydrate: () => void;
@@ -19,6 +22,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   token: null,
   refreshToken: null,
   user: null,
+  phone: null,
   isAuthenticated: false,
   isLoading: true,
 
@@ -29,16 +33,33 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ token, refreshToken, user, isAuthenticated: true, isLoading: false });
   },
 
+  setTokens: (token, refreshToken) => {
+    storage.set(mmkvKeys.AUTH_TOKEN, token);
+    storage.set(mmkvKeys.AUTH_REFRESH_TOKEN, refreshToken);
+    set({ token, refreshToken });
+  },
+
   setUser: (user) => {
     storage.set(mmkvKeys.AUTH_USER, JSON.stringify(user));
     set({ user });
+  },
+
+  setPhone: (phone) => {
+    set({ phone });
   },
 
   logout: () => {
     storage.delete(mmkvKeys.AUTH_TOKEN);
     storage.delete(mmkvKeys.AUTH_REFRESH_TOKEN);
     storage.delete(mmkvKeys.AUTH_USER);
-    set({ token: null, refreshToken: null, user: null, isAuthenticated: false, isLoading: false });
+    set({
+      token: null,
+      refreshToken: null,
+      user: null,
+      phone: null,
+      isAuthenticated: false,
+      isLoading: false,
+    });
   },
 
   setLoading: (loading) => {

@@ -115,3 +115,15 @@
 - [x] OTPInput — cajas individuales + keyboard oculto + auto-focus
 - [x] Toast — iconos + position (top/bottom) + animation + ToastProvider wrapper
 - [x] UI_GUIDELINES.md — documentación completa del Design System
+
+## ✅ Authentication Flow
+- [x] Splash screen — app/index.tsx con logo + redirect condicional por auth state
+- [x] Welcome screen — branding + botón "Iniciar sesión"
+- [x] Login screen — input phone + validación Zod + sendOtp mutation + navega a OTP
+- [x] OTP screen — 6 dígitos OTPInput + login mutation + resend
+- [x] SessionProvider — hydrate auth store desde MMKV al montar
+- [x] Persistencia JWT — MMKV (token, refreshToken, user) + hydrate
+- [x] Refresh Token — axios interceptor con queue de peticiones pendientes + setTokens
+- [x] Axios Interceptor — request (Bearer token) + response (401→refresh rotation, otros→toast)
+- [x] React Query — useSendOtp, useLogin, useLogout mutations
+- [x] AuthGuard — redirect a welcome si no autenticado, a tabs si autenticado

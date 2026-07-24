@@ -1,22 +1,30 @@
 import { Redirect, useSegments } from 'expo-router';
-import { useAuth } from '@/hooks/useAuth';
-import { Spinner } from '@/components/ui';
+import { useAuthStore } from '@/store/auth-store';
+import { Loader } from '@/components/ui';
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
-  const { token, isLoading, hydrate } = useAuth();
+  const isLoading = useAuthStore((s) => s.isLoading);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const segments = useSegments();
 
   if (isLoading) {
-    return <Spinner size="large" className="flex-1" />;
+    return (
+      <Loader
+        variant="spinner"
+        size="large"
+        text="Cargando..."
+        fullScreen
+      />
+    );
   }
 
   const isAuthRoute = segments[0] === '(auth)';
 
-  if (!token && !isAuthRoute) {
-    return <Redirect href="/(auth)/login" />;
+  if (!isAuthenticated && !isAuthRoute) {
+    return <Redirect href="/(auth)/welcome" />;
   }
 
-  if (token && isAuthRoute) {
+  if (isAuthenticated && isAuthRoute) {
     return <Redirect href="/(tabs)" />;
   }
 
