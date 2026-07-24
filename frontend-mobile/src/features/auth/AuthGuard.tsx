@@ -3,10 +3,10 @@ import { useAuth } from '@/hooks/useAuth';
 import { Spinner } from '@/components/ui';
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
-  const { token, isHydrated } = useAuth();
+  const { token, isLoading, hydrate } = useAuth();
   const segments = useSegments();
 
-  if (!isHydrated) {
+  if (isLoading) {
     return <Spinner size="large" className="flex-1" />;
   }
 

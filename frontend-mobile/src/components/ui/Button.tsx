@@ -1,4 +1,5 @@
 import { type VariantProps, cva } from 'class-variance-authority';
+import { type ReactNode } from 'react';
 import { ActivityIndicator, Pressable, Text } from 'react-native';
 import { twMerge } from 'tailwind-merge';
 
@@ -55,6 +56,8 @@ export interface ButtonProps extends VariantProps<typeof buttonVariants> {
   onPress?: () => void;
   loading?: boolean;
   disabled?: boolean;
+  leftIcon?: ReactNode;
+  rightIcon?: ReactNode;
   className?: string;
 }
 
@@ -66,6 +69,8 @@ export function Button({
   variant,
   size,
   fullWidth,
+  leftIcon,
+  rightIcon,
   className,
 }: ButtonProps) {
   const isDisabled = disabled || loading;
@@ -80,16 +85,20 @@ export function Button({
         className,
       )}
     >
-      {loading && (
+      {loading ? (
         <ActivityIndicator
           size="small"
           color={variant === 'primary' || variant === 'danger' ? 'white' : '#374151'}
-          className="mr-2"
         />
+      ) : (
+        <>
+          {leftIcon && <>{leftIcon}</>}
+          <Text className={twMerge(textVariants({ variant, size }), leftIcon ? 'ml-2' : '', rightIcon ? 'mr-2' : '')}>
+            {title}
+          </Text>
+          {rightIcon && <>{rightIcon}</>}
+        </>
       )}
-      <Text className={textVariants({ variant, size })}>
-        {loading ? 'Cargando...' : title}
-      </Text>
     </Pressable>
   );
 }

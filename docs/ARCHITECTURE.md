@@ -26,11 +26,16 @@ Auth, Clients, Providers, Services, Bookings, Reviews, Prisma, Health, Metrics, 
 - **Forms:** React Hook Form + Zod
 - **Storage:** react-native-mmkv
 
+### Design System (`src/components/ui/`)
+21 componentes primitivos con NativeWind v4 + CVA + tailwind-merge:
+
+`Avatar`, `Badge`, `BottomSheet`, `Button`, `Card`, `Chip`, `DatePicker`, `EmptyState`, `ErrorBoundary`, `Header`, `Input`, `Loader`, `LoadingOverlay`, `Modal`, `OTPInput`, `SearchBar`, `Select`, `Skeleton`/`SkeletonGroup`, `Spinner`, `Toast`/`ToastProvider`
+
 ### Estructura `src/`
 ```
 src/
 ├── app/          # Expo Router layouts (root, auth, tabs, 404)
-├── components/ui/ # Button, Input, Card, Badge, Spinner, EmptyState, ErrorBoundary, Toast, LoadingOverlay
+├── components/ui/ # Design System (21 componentes)
 ├── features/auth/ # AuthGuard
 ├── hooks/        # useAuth, useColorScheme, useToast
 ├── lib/          # query-client, mmkv, fonts

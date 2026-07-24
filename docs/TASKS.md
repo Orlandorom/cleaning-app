@@ -93,6 +93,25 @@
 - [x] types/ (api, auth)
 - [x] theme/ (colors, typography, spacing)
 - [x] utils/ (Zod validation, formatters, constants)
-- [x] components/ui/ (Button, Input, Card, Badge, Spinner, EmptyState, ErrorBoundary, Toast, LoadingOverlay)
+- [x] components/ui/ (10 originales)
 - [x] features/auth/AuthGuard
 - [x] 0 screens business logic — solo arquitectura
+
+## ✅ Design System
+- [x] Button — CVA con variant/size/fullWidth + leftIcon/rightIcon + loading + disabled
+- [x] Input — label, error, helperText, required, leftIcon/rightIcon, focus ring
+- [x] Card — elevated / outlined / ghost + padded
+- [x] Avatar — source (imagen) / fallback a iniciales con color determinista + 4 tamaños + 3 variants
+- [x] Badge — 5 variants + 2 tamaños + dot + leftIcon
+- [x] Chip — filled / outline / ghost + selected + closable + leftIcon
+- [x] Modal — RN Modal wrapper + 5 tamaños + close button + backdrop dismiss
+- [x] Bottom Sheet — custom con PanResponder + drag-to-close + snapPoint + backdrop
+- [x] Loader — spinner / dots + overlay fullScreen + texto opcional
+- [x] Skeleton — text / circular / rectangular shimmer + SkeletonGroup para listas
+- [x] Header — safe area + leftAction + title + rightActions
+- [x] SearchBar — icono + clear button + showCancel + onSubmitEditing
+- [x] Select — modal con FlatList + multiple (chips) + searchable + search filter
+- [x] DatePicker — custom calendar modal + navegación mes + min/max date
+- [x] OTPInput — cajas individuales + keyboard oculto + auto-focus
+- [x] Toast — iconos + position (top/bottom) + animation + ToastProvider wrapper
+- [x] UI_GUIDELINES.md — documentación completa del Design System
